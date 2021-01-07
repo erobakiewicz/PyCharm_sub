@@ -9,8 +9,14 @@ class SubscriptionModelTestCase(TestCase):
         self.subscription = SubscriptionFactory()
 
 
-    def test_user(self, client):
+    def test_user(self):
         user = UserFactory()
-        subscription = SubscriptionFactory()
-        response = client.post('/subscription', subscription)
-        assert User.objects.all().count() != 0
+        assert user.username == 'username0'
+        assert user.first_name == 'fname0'
+        assert user.last_name == 'lname0'
+
+
+    def test_subscription(self):
+        sub = SubscriptionFactory()
+        assert sub.price == 20.0
+
