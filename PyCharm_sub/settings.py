@@ -47,7 +47,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'PyCharm_sub.apps.subscriptions',
+    'subscriptions',
 
     'rest_framework',
 ]
