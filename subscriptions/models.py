@@ -5,7 +5,7 @@ from subscriptions.constants import UserTypes, BillingType, SpecialOffers
 
 
 class Subscription(models.Model):
-    Client = models.ForeignKey(User, on_delete=models.CASCADE)
+    client = models.ForeignKey(User, on_delete=models.CASCADE)
     sub_period = models.DateField()
     is_active = models.BooleanField()
     user_type = models.CharField(max_length=56, choices=UserTypes.Choices)
