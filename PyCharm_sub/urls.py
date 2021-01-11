@@ -27,4 +27,5 @@ router.register('subscription', SubscriptionViewSet, basename='subscription')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(router.urls)),
+    path('auth/', include('authapp.urls'))
 ]
