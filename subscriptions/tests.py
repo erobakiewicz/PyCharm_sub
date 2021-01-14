@@ -5,8 +5,8 @@ from django.utils import timezone
 
 from PyCharm_sub.factories import UserFactory, SubscriptionFactory
 from subscriptions.utils import check_if_user_has_valid_subscription, check_if_user_has_invalid_subscription, \
-    check_if_user_has_monthly_subscription, check_if_user_has_yearly_subscription, \
-    check_if_valid_monthly_subscription_is_added, check_if_user_has_valid_type, check_if_subscription_was_added_to_user
+    check_if_user_has_monthly_subscription, check_if_user_has_yearly_subscription, check_if_user_has_valid_type, \
+    check_if_subscription_was_added_to_user, check_if_valid_monthly_subscription_is_added
 
 client = Client()
 
