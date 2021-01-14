@@ -1,13 +1,18 @@
+from datetime import timedelta
+
 from django.test import TestCase, Client
+from django.utils import timezone
+from rest_framework.test import APIClient
 
 from PyCharm_sub.factories import UserFactory, SubscriptionFactory
+from subscriptions.utils import check_if_user_has_valid_subscription
 
 client = Client()
 
 
 class SubscriptionModelTestCase(TestCase):
 
-    def setup(self):
+    def setUp(self):
         self.user = UserFactory()
         self.subscription = SubscriptionFactory()
         self.client = Client()
@@ -21,17 +26,22 @@ class SubscriptionModelTestCase(TestCase):
     def test_subscription(self):
         sub = SubscriptionFactory()
         assert sub.price == 20.0
-        assert sub.is_active == True
+        assert sub.is_active == False
         assert sub.client.id == 1
         assert sub.client.first_name == 'fname0'
 
-    def test_json_response(self):
-        client = self.client
-        sub = SubscriptionFactory()
-        response = client.get(f'/subscription/{sub.id}/')
-        assert response.status_code == 200
-        print(type(response.json()))
-        k = {'id': 1, 'sub_period': '2020-02-02', 'is_active': True, 'user_type':
-            'individual', 'billing_type': 'yearly', 'special_offers': 'classroom_assistant', 'sub_quantity': 0,
-                                    'us_tax': True, 'price': '20.00', 'client': 1}
-        assert response.json() == k
+    def test_active_subscription(self):
+        SubscriptionFactory(is_active=True, client=self.user, sub_period=timezone.now() + timedelta(weeks=1))
+        has_valid_sub = check_if_user_has_valid_subscription(self.user)
+        self.assertEqual(has_valid_sub, True)
+
+    def test_inactive_subscription(self):
+        SubscriptionFactory(is_active=False, client=self.user)
+        has_valid_sub = check_if_user_has_valid_subscription(self.user)
+        self.assertEqual(has_valid_sub, False)
+
+    def test_inactive_subscription_None(self):
+        SubscriptionFactory(client=self.user, is_active=True)
+        SubscriptionFactory(client=self.user, is_active=False)
+        has_valid_sub = check_if_user_has_valid_subscription(self.user)
+        self.assertEqual(has_valid_sub, True)
