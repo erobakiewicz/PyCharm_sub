@@ -1,5 +1,7 @@
 from datetime import timedelta
 
+from django.contrib.auth.models import User
+from django.db.models import Count
 from django.utils import timezone
 
 from subscriptions.models import Subscription
@@ -77,3 +79,8 @@ def check_if_user_has_yearly_subscription(user):
         is_active=True,
         billing_type=BillingType.YEARLY
     ).exists()
+
+
+def check_all_users_with_vaild_sub():
+    all_users = User.objects.all().filter(subscription__is_active=True).count()
+    return all_users

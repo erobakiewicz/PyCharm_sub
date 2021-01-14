@@ -1,12 +1,14 @@
 from datetime import timedelta
 
+from django.contrib.auth.models import User
 from django.test import TestCase, Client
 from django.utils import timezone
 
 from PyCharm_sub.factories import UserFactory, SubscriptionFactory
 from subscriptions.utils import check_if_user_has_valid_subscription, check_if_user_has_invalid_subscription, \
     check_if_user_has_monthly_subscription, check_if_user_has_yearly_subscription, check_if_user_has_valid_type, \
-    check_if_subscription_was_added_to_user, check_if_valid_monthly_subscription_is_added
+    check_if_subscription_was_added_to_user, check_if_valid_monthly_subscription_is_added, \
+    check_all_users_with_vaild_sub
 
 client = Client()
 
@@ -20,7 +22,7 @@ class SubscriptionModelTestCase(TestCase):
 
     def test_user_has_no_subscription(self):
         has_sub = check_if_user_has_valid_subscription(self.user)
-        print((self.user.subscription_set).exists())
+        print(self.user.subscription_set.exists())
         self.assertEqual(has_sub, True)
 
     def test_active_subscription(self):
@@ -43,7 +45,7 @@ class SubscriptionModelTestCase(TestCase):
 
     def test_active_subscription_monthly(self):
         sub = SubscriptionFactory(is_active=True, client=self.user, sub_period=timezone.now() + timedelta(weeks=4),
-                            billing_type='monthly')
+                                  billing_type='monthly')
         has_monthly_sub = check_if_valid_monthly_subscription_is_added(self.user)
         print(sub.sub_period)
         self.assertEqual(has_monthly_sub, True)
@@ -83,3 +85,19 @@ class SubscriptionModelTestCase(TestCase):
         SubscriptionFactory(client=self.user, is_active=True, billing_type='yearly')
         has_yearly_sub = check_if_user_has_yearly_subscription(self.user)
         self.assertEqual(has_yearly_sub, True)
+
+
+class QueryAllTestCase(TestCase):
+
+    def setUp(self):
+        self.user = UserFactory()
+        self.user1 = UserFactory()
+        self.subscription = SubscriptionFactory(is_active=True, client=self.user)
+        self.subscription = SubscriptionFactory(is_active=False, client=self.user1)
+
+    def test_show_all_users_with_valid_subscription(self):
+        print(User.objects.all().values('subscription__is_active'))
+        print(User.objects.all().values('username'))
+        all_users_with_valid_subscription = check_all_users_with_vaild_sub()
+        print(all_users_with_valid_subscription)
+        self.assertGreater(all_users_with_valid_subscription, 0)
