@@ -5,7 +5,8 @@ from django.utils import timezone
 
 from PyCharm_sub.factories import UserFactory, SubscriptionFactory
 from subscriptions.utils import check_if_user_has_valid_subscription, check_if_user_has_invalid_subscription, \
-    check_if_user_has_monthly_subscription, check_if_user_has_yearly_subscription
+    check_if_user_has_monthly_subscription, check_if_user_has_yearly_subscription, \
+    check_if_valid_monthly_subscription_is_added, check_if_user_has_valid_type, check_if_subscription_was_added_to_user
 
 client = Client()
 
@@ -46,6 +47,11 @@ class SubscriptionModelTestCase(TestCase):
         has_monthly_sub = check_if_valid_monthly_subscription_is_added(self.user)
         print(sub.sub_period)
         self.assertEqual(has_monthly_sub, True)
+
+    def test_subscription_added_to_user(self):
+        SubscriptionFactory(client=self.user)
+        sub_added = check_if_subscription_was_added_to_user(self.user)
+        self.assertEqual(sub_added, False)
 
     def test_user_type(self):
         SubscriptionFactory(user_type="individual", client=self.user)

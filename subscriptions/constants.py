@@ -17,14 +17,17 @@ class BillingType:
         (YEARLY, 'yearly'),
     )
 
+
 class SpecialOffers:
     STUDENT = 'student'
     CLASSROOM_ASSISTANT = 'classroom_assistant'
     OPEN_SOURCE = 'open_source'
+    NO_SPECIAL_OFFERS = 'no_offers'
 
     Choices = (
         (STUDENT, 'student'),
         (CLASSROOM_ASSISTANT, 'classroom assistant'),
         (OPEN_SOURCE, 'open source'),
+        (NO_SPECIAL_OFFERS, 'no special offers'),
 
     )

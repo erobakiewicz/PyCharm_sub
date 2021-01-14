@@ -3,7 +3,7 @@ from datetime import timedelta
 from django.utils import timezone
 
 from subscriptions.models import Subscription
-from subscriptions.constants import BillingType
+from subscriptions.constants import BillingType, UserTypes, SpecialOffers
 
 
 def check_if_user_has_valid_subscription(user):
@@ -14,7 +14,20 @@ def check_if_user_has_valid_subscription(user):
 
 
 def check_if_subscription_was_added_to_user(user):
-    has_subscription =
+    sub = Subscription.objects.create(
+        client=user,
+        sub_period=timezone.now(),
+        is_active=True,
+        user_type=UserTypes.INDIVIDUAL,
+        billing_type=BillingType.MONTHLY,
+        special_offers=SpecialOffers.NO_SPECIAL_OFFERS,
+        us_tax=False,
+        price=1000,
+    )
+    if sub:
+        return True
+    return False
+
 
 def check_if_valid_monthly_subscription_is_added(user):
     monthly_sub = Subscription.objects.get(
