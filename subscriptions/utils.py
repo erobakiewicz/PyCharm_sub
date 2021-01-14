@@ -13,6 +13,9 @@ def check_if_user_has_valid_subscription(user):
     ).exists()
 
 
+def check_if_subscription_was_added_to_user(user):
+    has_subscription =
+
 def check_if_valid_monthly_subscription_is_added(user):
     monthly_sub = Subscription.objects.get(
         client=user,
