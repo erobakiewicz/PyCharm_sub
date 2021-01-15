@@ -84,3 +84,7 @@ def check_if_user_has_yearly_subscription(user):
 def check_all_users_with_vaild_sub():
     all_users = User.objects.all().filter(subscription__is_active=True).count()
     return all_users
+
+def check_all_user_subscriptions(user):
+    all_user_subscriptions = Subscription.objects.filter(client=user)
+    return all_user_subscriptions

@@ -21,7 +21,7 @@ class SubscriptionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Subscription
 
-    sub_period = factory.Sequence(lambda n: '202{0}-2-2'.format(n))
+    sub_period = factory.Sequence(lambda n: '2022-02-02'.format(n))
     is_active = factory.Faker("pybool")
     user_type = factory.fuzzy.FuzzyChoice(['individual','business'])
     billing_type = factory.fuzzy.FuzzyChoice(['monthly','yearly'])

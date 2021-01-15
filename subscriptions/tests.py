@@ -5,10 +5,11 @@ from django.test import TestCase, Client
 from django.utils import timezone
 
 from PyCharm_sub.factories import UserFactory, SubscriptionFactory
+from subscriptions.models import Subscription
 from subscriptions.utils import check_if_user_has_valid_subscription, check_if_user_has_invalid_subscription, \
     check_if_user_has_monthly_subscription, check_if_user_has_yearly_subscription, check_if_user_has_valid_type, \
     check_if_subscription_was_added_to_user, check_if_valid_monthly_subscription_is_added, \
-    check_all_users_with_vaild_sub
+    check_all_users_with_vaild_sub, check_all_user_subscriptions
 
 client = Client()
 
@@ -23,7 +24,7 @@ class SubscriptionModelTestCase(TestCase):
     def test_user_has_no_subscription(self):
         has_sub = check_if_user_has_valid_subscription(self.user)
         print(self.user.subscription_set.exists())
-        self.assertEqual(has_sub, True)
+        self.assertEqual(has_sub, False)
 
     def test_active_subscription(self):
         sub0 = SubscriptionFactory(is_active=True, client=self.user, sub_period=timezone.now() + timedelta(weeks=1))
@@ -53,7 +54,7 @@ class SubscriptionModelTestCase(TestCase):
     def test_subscription_added_to_user(self):
         SubscriptionFactory(client=self.user)
         sub_added = check_if_subscription_was_added_to_user(self.user)
-        self.assertEqual(sub_added, False)
+        self.assertEqual(sub_added, True)
 
     def test_user_type(self):
         SubscriptionFactory(user_type="individual", client=self.user)
@@ -63,7 +64,7 @@ class SubscriptionModelTestCase(TestCase):
     def test_user_wrong_type(self):
         SubscriptionFactory(user_type="random", client=self.user)
         has_valid_type = check_if_user_has_valid_type(self.user)
-        self.assertEqual(has_valid_type, True)
+        self.assertEqual(has_valid_type, False)
 
     def test_user_type_choice(self):
         sub = SubscriptionFactory(client=self.user)
@@ -101,3 +102,7 @@ class QueryAllTestCase(TestCase):
         all_users_with_valid_subscription = check_all_users_with_vaild_sub()
         print(all_users_with_valid_subscription)
         self.assertGreater(all_users_with_valid_subscription, 0)
+
+    def test_show_all_subscriptions_of_a_user(self):
+        all_user_sub = check_all_user_subscriptions(self.user)
+        self.assertTrue(all_user_sub, Subscription.objects.filter(client=self.user))
