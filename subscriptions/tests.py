@@ -5,11 +5,12 @@ from django.test import TestCase, Client
 from django.utils import timezone
 
 from PyCharm_sub.factories import UserFactory, SubscriptionFactory
+from subscriptions.constants import BillingType
 from subscriptions.models import Subscription
 from subscriptions.utils import check_if_user_has_valid_subscription, check_if_user_has_invalid_subscription, \
     check_if_user_has_monthly_subscription, check_if_user_has_yearly_subscription, check_if_user_has_valid_type, \
     check_if_subscription_was_added_to_user, check_if_valid_monthly_subscription_is_added, \
-    check_all_users_with_vaild_sub, check_all_user_subscriptions
+    check_all_users_with_vaild_sub, check_all_user_subscriptions, check_user_has_valid_billing_type
 
 client = Client()
 
@@ -18,6 +19,8 @@ class SubscriptionModelTestCase(TestCase):
 
     def setUp(self):
         self.user = UserFactory()
+        self.user1 = UserFactory()
+
         self.subscription = SubscriptionFactory()
         self.client = Client()
 
@@ -87,6 +90,16 @@ class SubscriptionModelTestCase(TestCase):
         has_yearly_sub = check_if_user_has_yearly_subscription(self.user)
         self.assertEqual(has_yearly_sub, True)
 
+    def test_if_users_have_valid_billing_type(self):
+        SubscriptionFactory(client=self.user, is_active=True, billing_type='monthly')
+        SubscriptionFactory(client=self.user1, is_active=True, billing_type='yearly')
+        user_has_valid_billing_type = check_user_has_valid_billing_type(self.user)
+        user_has_valid_billing_type1 = check_user_has_valid_billing_type(self.user1)
+        print(user_has_valid_billing_type)
+        print(user_has_valid_billing_type1)
+        self.assertEqual(user_has_valid_billing_type, True)
+        self.assertEqual(user_has_valid_billing_type1, True)
+
 
 class QueryAllTestCase(TestCase):
 
@@ -97,7 +110,7 @@ class QueryAllTestCase(TestCase):
         self.subscription = SubscriptionFactory(is_active=False, client=self.user1)
 
     def test_show_all_users_with_valid_subscription(self):
-        print(User.objects.all().values('subscription__is_active'))
+        print(User.objects.all().values('subscription__id'))
         print(User.objects.all().values('username'))
         all_users_with_valid_subscription = check_all_users_with_vaild_sub()
         print(all_users_with_valid_subscription)
@@ -105,4 +118,5 @@ class QueryAllTestCase(TestCase):
 
     def test_show_all_subscriptions_of_a_user(self):
         all_user_sub = check_all_user_subscriptions(self.user)
+        print(all_user_sub)
         self.assertTrue(all_user_sub, Subscription.objects.filter(client=self.user))

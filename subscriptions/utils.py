@@ -80,6 +80,12 @@ def check_if_user_has_yearly_subscription(user):
         billing_type=BillingType.YEARLY
     ).exists()
 
+def check_user_has_valid_billing_type(user):
+    valid_type = user.subscription_set.values_list('billing_type', flat=True).get(
+        billing_type__in=[BillingType.YEARLY, BillingType.MONTHLY])
+    if valid_type in ['monthly', 'yearly']:
+        return True
+    return False
 
 def check_all_users_with_vaild_sub():
     all_users = User.objects.all().filter(subscription__is_active=True).count()
