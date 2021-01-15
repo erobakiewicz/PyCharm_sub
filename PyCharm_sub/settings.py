@@ -89,7 +89,7 @@ WSGI_APPLICATION = 'PyCharm_sub.wsgi.application'
 
 DATABASES = {
     # read os.environ['DATABASE_URL'] and raises ImproperlyConfigured exception if not found
-    'default': env.db(),
+    'default': env.db('DATABASE_URL'),
     # read os.environ['SQLITE_URL']
     'extra': env.db('SQLITE_URL', default='sqlite:////tmp/my-tmp-sqlite.db')
 }

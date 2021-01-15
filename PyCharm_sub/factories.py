@@ -1,9 +1,5 @@
-from datetime import datetime
-
-import factory
-from django.contrib.auth.models import User
-import factory
 import factory.fuzzy
+from django.contrib.auth.models import User
 from subscriptions.models import Subscription
 
 
@@ -28,5 +24,5 @@ class SubscriptionFactory(factory.django.DjangoModelFactory):
     special_offers = factory.fuzzy.FuzzyChoice(['student','classroom_assistant'])
     sub_quantity = factory.fuzzy.FuzzyInteger(1)
     us_tax = factory.Faker("pybool")
-    price = factory.fuzzy.FuzzyDecimal(20.0,20.0)
+    price = factory.fuzzy.FuzzyDecimal(20.0, 20.0)
     client = factory.SubFactory(UserFactory)

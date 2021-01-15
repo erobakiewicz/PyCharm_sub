@@ -1,0 +1,2 @@
+class ProlongingError(Exception):
+    pass
