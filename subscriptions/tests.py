@@ -182,3 +182,5 @@ class SubscriptionProlongingTestCase(APITestCase):
 
         self.assertEqual(response.status_code, 201)
         mock.assert_called_once()
+
+
