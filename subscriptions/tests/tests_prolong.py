@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+from dateutil.relativedelta import relativedelta
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
@@ -30,10 +31,12 @@ class SubscriptionProlongingTestCase(APITestCase):
 
         self.assertEqual(subscription_count_before + 1, subscription_count_after)
 
-        self.assertEqual(response.data.get('date_created'), sub.date_created)
+        self.assertEqual(response.data['date_created'][0:19], sub.date_created.strftime("%Y-%m-%dT%H:%M:%S"))
         self.assertEqual(response.data.get('user_type'), sub.user_type)
         self.assertEqual(response.data.get('billing_type'), sub.billing_type)
         self.assertEqual(response.data.get('special_offers'), sub.special_offers)
+        self.assertEqual(response.data.get('valid_till').strftime("%Y-%m-%dT%H:%M:%S"),
+                         sub.valid_till.strftime("%Y-%m-%dT%H:%M:%S"))
 
     def test_unsuccessful_prolong_when_student(self):
         SubscriptionFactory(client=self.user, special_offers=SpecialOffers.STUDENT)
@@ -51,7 +54,7 @@ class SubscriptionProlongingTestCase(APITestCase):
             '/subscription/',
         )
         self.assertEqual(response.status_code, 400)
-        self.assertIn('This field is required.', response.data.get('date_created'))
+        self.assertEqual(None, response.data.get('date_created'))
 
     @patch('subscriptions.services.prolong.ProlongSubscription.send_notification_mail')
     def test_send_email_after_successful_prolog(self, mock):
@@ -62,3 +65,14 @@ class SubscriptionProlongingTestCase(APITestCase):
 
         self.assertEqual(response.status_code, 201)
         mock.assert_called_once()
+
+    def test_prolonged_valid_till(self):
+        sub = SubscriptionFactory(client=self.user,
+                            billing_type='monthly',
+                            special_offers=SpecialOffers.NO_SPECIAL_OFFERS)
+        response = self.client.post(
+            '/subscription/',
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data.get("valid_till").strftime("%Y-%m-%dT%H:%M:%S"),
+                         (sub.valid_till).strftime("%Y-%m-%dT%H:%M:%S"))
