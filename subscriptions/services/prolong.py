@@ -37,14 +37,11 @@ class ProlongSubscription:
     def create_new_sub(self):
         obj = Subscription.objects.create(
             client=self.subscription.client,
-            sub_period=self.subscription.sub_period,
+            date_created=self.subscription.date_created,
             is_active=True,
             user_type=self.subscription.user_type,
             billing_type=self.subscription.billing_type,
             special_offers=self.subscription.special_offers,
-            sub_quantity=self.subscription.sub_quantity,
-            us_tax=self.subscription.us_tax,
-            price=self.subscription.price,
         )
         self.new_sub = SubscriptionSerializer(obj).data
 

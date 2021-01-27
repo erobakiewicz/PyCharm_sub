@@ -11,7 +11,9 @@ class Subscription(models.Model):
     is_active = models.BooleanField()
     user_type = models.CharField(max_length=56, choices=UserTypes.Choices)
     billing_type = models.CharField(max_length=56, choices=BillingType.Choices)
-    special_offers = models.CharField(max_length=128, choices=SpecialOffers.Choices)
+    special_offers = models.CharField(max_length=128,
+                                      choices=SpecialOffers.Choices,
+                                      default=SpecialOffers.NO_SPECIAL_OFFERS)
     date_created = models.DateTimeField(auto_now_add=True)
 
     @property

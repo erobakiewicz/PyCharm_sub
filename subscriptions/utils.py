@@ -11,20 +11,18 @@ from subscriptions.constants import BillingType, UserTypes, SpecialOffers
 def check_if_user_has_valid_subscription(user):
     return user.subscription_set.filter(
         is_active=True,
-        sub_period__gte=timezone.now().date()
+        date_created__gte=timezone.now().date()
     ).exists()
 
 
 def check_if_subscription_was_added_to_user(user):
     sub = Subscription.objects.create(
         client=user,
-        sub_period=timezone.now(),
+        date_created=timezone.now(),
         is_active=True,
         user_type=UserTypes.INDIVIDUAL,
         billing_type=BillingType.MONTHLY,
         special_offers=SpecialOffers.NO_SPECIAL_OFFERS,
-        us_tax=False,
-        price=1000,
     )
     if sub:
         return True
@@ -37,7 +35,7 @@ def check_if_valid_monthly_subscription_is_added(user):
         billing_type='monthly'
     )
     if monthly_sub:
-        monthly_sub.sub_period += timedelta(weeks=4)
+        monthly_sub.date_created += timedelta(weeks=4)
         monthly_sub.save()
         return True
     else:
@@ -60,7 +58,7 @@ def check_if_user_has_valid_type(user):
 def check_if_user_has_invalid_subscription(user):
     return user.subscription_set.filter(
         is_active=False,
-        sub_period__lt=timezone.now()
+        date_created__lt=timezone.now()
     ).exists()
 
 

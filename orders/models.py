@@ -6,7 +6,9 @@ from subscriptions.models import Subscription
 
 class Order(models.Model):
     subscription = models.OneToOneField(Subscription, on_delete=models.CASCADE)
-    order_status = models.CharField(max_length=50, choices=OrderStatus.Choices)
+    order_status = models.CharField(max_length=50,
+                                    choices=OrderStatus.Choices,
+                                    default=OrderStatus.IN_PROGRESS)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
     email = models.EmailField()

@@ -17,12 +17,9 @@ class SubscriptionFactory(factory.django.DjangoModelFactory):
     class Meta:
         model = Subscription
 
-    sub_period = factory.Sequence(lambda n: '2022-02-02'.format(n))
+    date_created = factory.Sequence(lambda n: '2022-02-02'.format(n))
     is_active = factory.Faker("pybool")
     user_type = factory.fuzzy.FuzzyChoice(['individual','business'])
     billing_type = factory.fuzzy.FuzzyChoice(['monthly','yearly'])
     special_offers = factory.fuzzy.FuzzyChoice(['student','classroom_assistant'])
-    sub_quantity = factory.fuzzy.FuzzyInteger(1)
-    us_tax = factory.Faker("pybool")
-    price = factory.fuzzy.FuzzyDecimal(20.0, 20.0)
     client = factory.SubFactory(UserFactory)
