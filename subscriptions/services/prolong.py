@@ -17,7 +17,7 @@ class ProlongSubscription:
 
     def prolong(self):
         # 1. check it its possible
-        if not self.all_good():
+        if not self.prolong_validation():
             raise ProlongingError
         # 2. do the thing
         self.create_new_prolonged_sub()
@@ -25,7 +25,7 @@ class ProlongSubscription:
         self.send_notification_mail()
         return
 
-    def all_good(self):
+    def prolong_validation(self):
         if self.subscription.special_offers == SpecialOffers.STUDENT:
             self.errors.update(
                 {
@@ -37,7 +37,6 @@ class ProlongSubscription:
 
     def create_new_prolonged_sub(self):
         last_sub_valid_till = Subscription.objects.filter(client=self.user).last()
-        # print(last_sub_valid_till.valid_till)
         obj = Subscription.objects.create(
             client=self.subscription.client,
             date_created=self.subscription.date_created,
