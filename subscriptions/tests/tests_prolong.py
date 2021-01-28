@@ -67,9 +67,11 @@ class SubscriptionProlongingTestCase(APITestCase):
         mock.assert_called_once()
 
     def test_prolonged_valid_till(self):
-        sub = SubscriptionFactory(client=self.user,
-                            billing_type='monthly',
-                            special_offers=SpecialOffers.NO_SPECIAL_OFFERS)
+        sub = SubscriptionFactory(
+            client=self.user,
+            billing_type='yearly',
+            special_offers=SpecialOffers.NO_SPECIAL_OFFERS
+        )
         response = self.client.post(
             '/subscription/',
         )

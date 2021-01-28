@@ -22,3 +22,9 @@ class Subscription(models.Model):
             return self.date_created + relativedelta(months=1)
         else:
             return self.date_created + relativedelta(years=1)
+
+    @valid_till.setter
+    def valid_till(self, val):
+        pass
+
+
