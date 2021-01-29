@@ -1,5 +1,6 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 
+from dateutil.relativedelta import relativedelta
 from django.contrib.auth.models import User
 from django.utils import timezone
 
@@ -93,3 +94,18 @@ def check_all_users_with_vaild_sub():
 def check_all_user_subscriptions(user):
     all_user_subscriptions = Subscription.objects.filter(client=user)
     return all_user_subscriptions
+
+
+def check_is_active_when_outdated(user):
+    active_sub = Subscription.objects.get(
+        client=user
+    )
+    now = timezone.now()
+    valid_date = active_sub.valid_till
+    print(active_sub.id, 'THIS IS ID FROM UTILS')
+    if valid_date.date() > now.date():
+        active_sub.is_active = True
+        return active_sub.is_active
+    else:
+        active_sub.is_active = False
+        return active_sub.is_active

@@ -7,8 +7,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
 from PyCharm_sub.factories import SubscriptionFactory, UserFactory
-from subscriptions.constants import SpecialOffers
+from subscriptions.constants import SpecialOffers, BillingType
 from subscriptions.models import Subscription
+from subscriptions.utils import check_is_active_when_outdated
 
 
 class SubscriptionProlongingTestCase(APITestCase):
@@ -81,6 +82,13 @@ class SubscriptionProlongingTestCase(APITestCase):
         self.assertEqual(response.data.get("valid_till").strftime("%Y-%m-%dT%H:%M:%S"),
                          (sub.valid_till).strftime("%Y-%m-%dT%H:%M:%S"))
 
+    def test_deactivate_sub_after_valid_till(self):
+        sub = SubscriptionFactory(
+            client=self.user,
+            is_active=True,
+            billing_type=BillingType.MONTHLY,
+            special_offers=SpecialOffers.NO_SPECIAL_OFFERS
+
     def test_prolonged_before_end_date_valid_till(self):
         sub = SubscriptionFactory(
             client=self.user,
@@ -91,8 +99,29 @@ class SubscriptionProlongingTestCase(APITestCase):
         response = self.client.post(
             '/subscription/',
         )
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data.get(
+            'valid_till').strftime('%Y-%m-%d'), (
+                sub.date_created + relativedelta(months=1)).strftime('%Y-%m-%d'))
+        self.assertEqual(response.data.get('is_active'), True)
+        sub_outdated = check_is_active_when_outdated(sub.id)
+        # self.assertEqual(sub_outdated, True)
+        # self.assertEqual(response.data.get('is_active'), False)
+
+    def test_deactivate_no_response(self):
+        two_years_ago = timezone.now() - relativedelta(years=2)
+        print(two_years_ago, '<-- two years ago')
+        sub = SubscriptionFactory(
+            client=self.user,
+            is_active=False,
+            # date_created=two_years_ago,
+            billing_type=BillingType.MONTHLY,
+            special_offers=SpecialOffers.NO_SPECIAL_OFFERS
+        )
+        sub.valid = sub.date_created - relativedelta(years=2)
+        print(sub.id, '<------ ID')
+        print(sub.date_created, '<------ DATE CREATED')
+        sub_outdated = check_is_active_when_outdated(self.user)
+        self.assertEqual(sub_outdated, False)
         print(self.user.subscription_set.all())
         print(sub.valid_till, "sub valid till")
-        print(response.data.get("valid_till"), "sub2 valid till")
-        print(response.data.get("date_created"), "sub2 date created")
-        self.assertEqual(sub.client.id, response.data.get('client'))

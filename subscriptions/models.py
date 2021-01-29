@@ -24,5 +24,3 @@ class Subscription(models.Model):
         else:
             return self.date_created + relativedelta(years=1)
 
-
-
