@@ -1,6 +1,8 @@
+from datetime import timedelta
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
+from django.utils import timezone
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
@@ -78,3 +80,19 @@ class SubscriptionProlongingTestCase(APITestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data.get("valid_till").strftime("%Y-%m-%dT%H:%M:%S"),
                          (sub.valid_till).strftime("%Y-%m-%dT%H:%M:%S"))
+
+    def test_prolonged_before_end_date_valid_till(self):
+        sub = SubscriptionFactory(
+            client=self.user,
+            billing_type='yearly',
+            special_offers=SpecialOffers.NO_SPECIAL_OFFERS,
+            date_created=timezone.now() + timedelta(weeks=4),
+        )
+        response = self.client.post(
+            '/subscription/',
+        )
+        print(self.user.subscription_set.all())
+        print(sub.valid_till, "sub valid till")
+        print(response.data.get("valid_till"), "sub2 valid till")
+        print(response.data.get("date_created"), "sub2 date created")
+        self.assertEqual(sub.client.id, response.data.get('client'))

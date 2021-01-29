@@ -35,8 +35,19 @@ class ProlongSubscription:
             return False
         return True
 
+
+    def prolong_date_validation(self):
+        sub_query = Subscription.objects.all().order_by('-date_created')[1]
+        last_sub_valid_till = sub_query.valid_till
+        print(last_sub_valid_till,"last_sub_valid_till")
+        if last_sub_valid_till < self.subscription.date_created:
+            self.subscription.date_created = last_sub_valid_till
+            print(self.subscription.date_created, 'date created')
+            return self.subscription.date_created
+        else:
+            return self.subscription.date_created
+
     def create_new_prolonged_sub(self):
-        last_sub_valid_till = Subscription.objects.filter(client=self.user).last()
         obj = Subscription.objects.create(
             client=self.subscription.client,
             date_created=self.subscription.date_created,
@@ -45,17 +56,12 @@ class ProlongSubscription:
             billing_type=self.subscription.billing_type,
             special_offers=self.subscription.special_offers,
         )
+        self.prolong_date_validation()
         if obj.billing_type == BillingType.MONTHLY:
-            a = last_sub_valid_till.valid_till + relativedelta(months=1)
             self.new_sub = SubscriptionSerializer(obj).data
-            print(obj.date_created, '<---- date created')
-            print(obj.valid_till, '<--- valid till')
-
             return self.new_sub
         else:
             obj.date_created + relativedelta(years=1)
-            print(obj.date_created, '<--- date created')
-            print(obj.valid_till, '<--- date created')
             self.new_sub = SubscriptionSerializer(obj).data
             return self.new_sub
 
