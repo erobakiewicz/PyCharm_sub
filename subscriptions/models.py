@@ -26,5 +26,3 @@ class Subscription(models.Model):
     @valid_till.setter
     def valid_till(self, val):
         pass
-
-
