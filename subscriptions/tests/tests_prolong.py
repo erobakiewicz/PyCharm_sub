@@ -87,7 +87,7 @@ class SubscriptionProlongingTestCase(APITestCase):
             client=self.user,
             is_active=True,
             billing_type=BillingType.MONTHLY,
-            special_offers=SpecialOffers.NO_SPECIAL_OFFERS
+            special_offers=SpecialOffers.NO_SPECIAL_OFFERS)
 
     def test_prolonged_before_end_date_valid_till(self):
         sub = SubscriptionFactory(
@@ -120,7 +120,7 @@ class SubscriptionProlongingTestCase(APITestCase):
         )
         sub.valid = sub.date_created - relativedelta(years=2)
         print(sub.id, '<------ ID')
-        print(sub.date_created, '<------ DATE CREATED')
+        print(sub.valid_from, '<------ DATE CREATED')
         sub_outdated = check_is_active_when_outdated(self.user)
         self.assertEqual(sub_outdated, False)
         print(self.user.subscription_set.all())

@@ -37,10 +37,10 @@ class ProlongSubscription:
     def prolong_date_validation(self, obj):
         sub_query = Subscription.objects.filter(client=obj.client).exclude(id=obj.id).order_by('-date_created').first()
         last_sub_valid_till = sub_query.valid_till
-        if last_sub_valid_till < self.subscription.date_created:
-            self.subscription.date_created = last_sub_valid_till
+        if last_sub_valid_till < self.subscription.valid_from:
+            self.subscription.valid_from = last_sub_valid_till
             print(last_sub_valid_till, "last_sub_valid_till")
-            print(self.subscription.date_created, 'date created')
+            print(self.subscription.valid_from, 'date created')
             self.subscription.save()
 
     def create_new_prolonged_sub(self):
