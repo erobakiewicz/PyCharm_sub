@@ -1,3 +1,4 @@
+from datetime import timedelta
 from unittest.mock import patch
 
 from dateutil.relativedelta import relativedelta
@@ -87,6 +88,13 @@ class SubscriptionProlongingTestCase(APITestCase):
             is_active=True,
             billing_type=BillingType.MONTHLY,
             special_offers=SpecialOffers.NO_SPECIAL_OFFERS
+
+    def test_prolonged_before_end_date_valid_till(self):
+        sub = SubscriptionFactory(
+            client=self.user,
+            billing_type='yearly',
+            special_offers=SpecialOffers.NO_SPECIAL_OFFERS,
+            date_created=timezone.now() + timedelta(weeks=4),
         )
         response = self.client.post(
             '/subscription/',
@@ -115,3 +123,5 @@ class SubscriptionProlongingTestCase(APITestCase):
         print(sub.date_created, '<------ DATE CREATED')
         sub_outdated = check_is_active_when_outdated(self.user)
         self.assertEqual(sub_outdated, False)
+        print(self.user.subscription_set.all())
+        print(sub.valid_till, "sub valid till")
