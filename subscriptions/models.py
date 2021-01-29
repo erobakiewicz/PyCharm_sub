@@ -15,6 +15,7 @@ class Subscription(models.Model):
                                       choices=SpecialOffers.Choices,
                                       default=SpecialOffers.NO_SPECIAL_OFFERS)
     date_created = models.DateTimeField(auto_now_add=True)
+    valid_from = models.DateTimeField()
 
     @property
     def valid_till(self):
@@ -23,8 +24,5 @@ class Subscription(models.Model):
         else:
             return self.date_created + relativedelta(years=1)
 
-    @valid_till.setter
-    def valid_till(self, val):
-        pass
 
 

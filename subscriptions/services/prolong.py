@@ -1,5 +1,4 @@
 from dateutil.relativedelta import relativedelta
-from django.core.mail import send_mail
 
 from subscriptions.constants import SpecialOffers, BillingType
 from subscriptions.errors import ProlongingError
@@ -35,17 +34,14 @@ class ProlongSubscription:
             return False
         return True
 
-
-    def prolong_date_validation(self):
-        sub_query = Subscription.objects.all().order_by('-date_created')[1]
+    def prolong_date_validation(self, obj):
+        sub_query = Subscription.objects.filter(client=obj.client).exclude(id=obj.id).order_by('-date_created').first()
         last_sub_valid_till = sub_query.valid_till
-        print(last_sub_valid_till,"last_sub_valid_till")
         if last_sub_valid_till < self.subscription.date_created:
             self.subscription.date_created = last_sub_valid_till
+            print(last_sub_valid_till, "last_sub_valid_till")
             print(self.subscription.date_created, 'date created')
-            return self.subscription.date_created
-        else:
-            return self.subscription.date_created
+            self.subscription.save()
 
     def create_new_prolonged_sub(self):
         obj = Subscription.objects.create(
@@ -56,7 +52,7 @@ class ProlongSubscription:
             billing_type=self.subscription.billing_type,
             special_offers=self.subscription.special_offers,
         )
-        self.prolong_date_validation()
+        self.prolong_date_validation(obj)
         if obj.billing_type == BillingType.MONTHLY:
             self.new_sub = SubscriptionSerializer(obj).data
             return self.new_sub
@@ -64,7 +60,6 @@ class ProlongSubscription:
             obj.date_created + relativedelta(years=1)
             self.new_sub = SubscriptionSerializer(obj).data
             return self.new_sub
-
 
     def send_notification_mail(self):
         # send_mail(
