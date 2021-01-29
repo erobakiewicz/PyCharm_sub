@@ -9,7 +9,7 @@ from subscriptions.models import Subscription
 from subscriptions.utils import check_if_user_has_valid_subscription, check_if_user_has_invalid_subscription, \
     check_if_user_has_monthly_subscription, check_if_user_has_yearly_subscription, check_if_user_has_valid_type, \
     check_if_subscription_was_added_to_user, check_if_valid_monthly_subscription_is_added, \
-    check_all_users_with_vaild_sub, check_all_user_subscriptions, check_user_has_valid_billing_type
+    check_all_user_subscriptions, check_user_has_valid_billing_type, check_all_users_with_valid_sub
 
 client = Client()
 
@@ -111,7 +111,7 @@ class QueryAllTestCase(TestCase):
     def test_show_all_users_with_valid_subscription(self):
         print(User.objects.all().values('subscription__id'))
         print(User.objects.all().values('username'))
-        all_users_with_valid_subscription = check_all_users_with_vaild_sub()
+        all_users_with_valid_subscription = check_all_users_with_valid_sub()
         print(all_users_with_valid_subscription)
         self.assertGreater(all_users_with_valid_subscription, 0)
 

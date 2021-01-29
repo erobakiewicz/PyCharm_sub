@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 
@@ -27,10 +27,10 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         if request.user.subscription_set.all().exists():
-            operator = ProlongSubscription(request.user.subscription_set.last())
+            operator = ProlongSubscription(subscription=request.user.subscription_set.last())
             try:
                 operator.prolong()
-                obj = operator.new_sub
+                obj = self.serializer_class(operator.new_sub).data
             except ProlongingError:
                 return Response(status=status.HTTP_401_UNAUTHORIZED, data=operator.errors)
         else:

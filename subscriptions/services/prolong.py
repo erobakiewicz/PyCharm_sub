@@ -1,4 +1,5 @@
 from dateutil.relativedelta import relativedelta
+from django.utils import timezone
 
 from subscriptions.constants import SpecialOffers, BillingType
 from subscriptions.errors import ProlongingError
@@ -11,8 +12,8 @@ class ProlongSubscription:
     new_sub = None
 
     def __init__(self, subscription):
-        self.subscription = subscription
-        self.user = self.subscription.client
+        self.old_subscription = subscription
+        self.user = self.old_subscription.client
 
     def prolong(self):
         # 1. check it its possible
@@ -25,7 +26,7 @@ class ProlongSubscription:
         return
 
     def prolong_validation(self):
-        if self.subscription.special_offers == SpecialOffers.STUDENT:
+        if self.old_subscription.special_offers == SpecialOffers.STUDENT:
             self.errors.update(
                 {
                     'error1': 'Nie możesz przedłużyć subskrypcji studenckiej. Zapłać normalnie hajs kutafonie.'
@@ -34,32 +35,21 @@ class ProlongSubscription:
             return False
         return True
 
-    def prolong_date_validation(self, obj):
-        sub_query = Subscription.objects.filter(client=obj.client).exclude(id=obj.id).order_by('-date_created').first()
-        last_sub_valid_till = sub_query.valid_till
-        if last_sub_valid_till < self.subscription.valid_from:
-            self.subscription.valid_from = last_sub_valid_till
-            print(last_sub_valid_till, "last_sub_valid_till")
-            print(self.subscription.valid_from, 'date created')
-            self.subscription.save()
+    def get_valid_from(self):
+        if timezone.now() < self.old_subscription.valid_till:
+            return self.old_subscription.valid_till
+        else:
+            return timezone.now()
 
     def create_new_prolonged_sub(self):
-        obj = Subscription.objects.create(
-            client=self.subscription.client,
-            date_created=self.subscription.date_created,
+        self.new_sub = Subscription.objects.create(
+            client=self.old_subscription.client,
             is_active=True,
-            user_type=self.subscription.user_type,
-            billing_type=self.subscription.billing_type,
-            special_offers=self.subscription.special_offers,
+            user_type=self.old_subscription.user_type,
+            billing_type=self.old_subscription.billing_type,
+            special_offers=self.old_subscription.special_offers,
+            valid_from=self.get_valid_from()
         )
-        self.prolong_date_validation(obj)
-        if obj.billing_type == BillingType.MONTHLY:
-            self.new_sub = SubscriptionSerializer(obj).data
-            return self.new_sub
-        else:
-            obj.date_created + relativedelta(years=1)
-            self.new_sub = SubscriptionSerializer(obj).data
-            return self.new_sub
 
     def send_notification_mail(self):
         # send_mail(

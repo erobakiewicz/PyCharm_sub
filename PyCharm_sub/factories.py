@@ -1,5 +1,7 @@
 import factory.fuzzy
 from django.contrib.auth.models import User
+from django.utils import timezone
+
 from subscriptions.models import Subscription
 
 
@@ -23,3 +25,4 @@ class SubscriptionFactory(factory.django.DjangoModelFactory):
     billing_type = factory.fuzzy.FuzzyChoice(['monthly','yearly'])
     special_offers = factory.fuzzy.FuzzyChoice(['student','classroom_assistant'])
     client = factory.SubFactory(UserFactory)
+    valid_from = timezone.now()

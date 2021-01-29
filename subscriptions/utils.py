@@ -17,17 +17,8 @@ def check_if_user_has_valid_subscription(user):
 
 
 def check_if_subscription_was_added_to_user(user):
-    sub = Subscription.objects.create(
-        client=user,
-        date_created=timezone.now(),
-        is_active=True,
-        user_type=UserTypes.INDIVIDUAL,
-        billing_type=BillingType.MONTHLY,
-        special_offers=SpecialOffers.NO_SPECIAL_OFFERS,
-    )
-    if sub:
-        return True
-    return False
+    clients_subscriptions = Subscription.objects.filter(client=user)
+    return clients_subscriptions.exists()
 
 
 def check_if_valid_monthly_subscription_is_added(user):
@@ -86,7 +77,7 @@ def check_user_has_valid_billing_type(user):
     return False
 
 
-def check_all_users_with_vaild_sub():
+def check_all_users_with_valid_sub():
     all_users = User.objects.all().filter(subscription__is_active=True).count()
     return all_users
 
@@ -94,18 +85,3 @@ def check_all_users_with_vaild_sub():
 def check_all_user_subscriptions(user):
     all_user_subscriptions = Subscription.objects.filter(client=user)
     return all_user_subscriptions
-
-
-def check_is_active_when_outdated(user):
-    active_sub = Subscription.objects.get(
-        client=user
-    )
-    now = timezone.now()
-    valid_date = active_sub.valid_till
-    print(active_sub.id, 'THIS IS ID FROM UTILS')
-    if valid_date.date() > now.date():
-        active_sub.is_active = True
-        return active_sub.is_active
-    else:
-        active_sub.is_active = False
-        return active_sub.is_active
