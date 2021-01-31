@@ -17,11 +17,12 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
+from orders.views import OrderViewSet
 from subscriptions.views import SubscriptionViewSet
 
 router = DefaultRouter()
 
-
+router.register('orders', OrderViewSet, basename='order')
 router.register('subscription', SubscriptionViewSet, basename='subscription')
 
 urlpatterns = [
