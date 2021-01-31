@@ -1,4 +1,5 @@
 from dateutil.relativedelta import relativedelta
+from django.core.mail import send_mail
 from django.utils import timezone
 
 from subscriptions.constants import SpecialOffers, BillingType
@@ -52,8 +53,14 @@ class ProlongSubscription:
         )
 
     def send_notification_mail(self):
-        # send_mail(
-        #     subject='eeeeeee',
-        #     message='Masz nową subskrypcję PyCharma'
-        # )
-        pass
+        prolonged_subscription = self.new_sub
+        subject = f'Your Pycharm subscription {prolonged_subscription.id} is prolonged.'
+        message = f'Dear {prolonged_subscription.client.first_name} {prolonged_subscription.client.last_name},' \
+                  f'Your {prolonged_subscription.billing_type} subscription has been prolonged untill' \
+                  f' {prolonged_subscription.valid_till.strftime("%Y-%m-%d")}.'
+        mail_sent = send_mail(subject,
+                              message,
+                              "admin@pycharmshop.com",
+                              {prolonged_subscription.client.email})
+        return mail_sent
+
