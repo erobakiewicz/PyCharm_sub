@@ -43,12 +43,10 @@ class ProlongSubscription:
     def create_new_prolonged_sub(self):
         self.new_sub = Subscription.objects.create(
             client=self.old_subscription.client,
-            is_active=True,
-            user_type=self.old_subscription.user_type,
-            billing_type=self.old_subscription.billing_type,
-            special_offers=self.old_subscription.special_offers,
-            valid_from=self.get_valid_from()
-        )
+        obj = Subscription.objects.create(
+            client=self.subscription.client,
+            date_created=self.subscription.date_created,))
+
 
     def send_notification_mail(self):
         prolonged_subscription = self.new_sub

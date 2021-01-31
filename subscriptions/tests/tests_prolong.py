@@ -110,3 +110,23 @@ class SubscriptionProlongingTestCase(APITestCase):
         new_sub = Subscription.objects.filter(client=self.user).order_by('-date_created').first()
         self.assertNotEqual(new_sub.id, old_sub.id)
         self.assertEqual(new_sub.valid_from.date(), month_later.date())
+
+
+    def test_deactivate_no_response(self):
+        two_years_ago = timezone.now() - relativedelta(years=2)
+        print(two_years_ago, '<-- two years ago')
+        sub = SubscriptionFactory(
+            client=self.user,
+            is_active=False,
+            # date_created=two_years_ago,
+            billing_type=BillingType.MONTHLY,
+            special_offers=SpecialOffers.NO_SPECIAL_OFFERS
+        )
+        sub.valid = sub.date_created - relativedelta(years=2)
+        print(sub.id, '<------ ID')
+        print(sub.valid_from, '<------ DATE CREATED')
+        sub_outdated = check_is_active_when_outdated(self.user)
+        self.assertEqual(sub_outdated, False)
+        print(self.user.subscription_set.all())
+        print(sub.valid_till, "sub valid till")
+
