@@ -5,7 +5,11 @@ from subscriptions.models import Subscription
 
 
 class Order(models.Model):
-    subscription = models.OneToOneField(Subscription, on_delete=models.CASCADE)
+    subscription = models.OneToOneField(
+        Subscription,
+        on_delete=models.CASCADE,
+        related_name='order',
+    )
     order_status = models.CharField(
         max_length=50,
         choices=OrderStatus.Choices,

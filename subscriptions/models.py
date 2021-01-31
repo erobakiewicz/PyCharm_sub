@@ -7,7 +7,11 @@ from subscriptions.constants import UserTypes, BillingType, SpecialOffers
 
 
 class Subscription(models.Model):
-    client = models.ForeignKey(User, on_delete=models.CASCADE)
+    client = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='subscriptions'
+    )
     is_active = models.BooleanField()
     user_type = models.CharField(max_length=56, choices=UserTypes.Choices)
     billing_type = models.CharField(max_length=56, choices=BillingType.Choices)
