@@ -2,7 +2,7 @@ from rest_framework.test import APITestCase
 
 from PyCharm_sub.factories import UserFactory, SubscriptionFactory
 from orders.factories import OrderFactory
-from orders.utils import check_if_subscription_is_ordered
+from orders.utils import check_if_sub_and_order_has_the_same_client
 
 
 class NewOrderTestCase(APITestCase):
@@ -15,12 +15,12 @@ class NewOrderTestCase(APITestCase):
     def test_simple_order(self):
         """Endpoint przyjmuje id nowej subskrypcji, tworzy nowy order"""
         # sprawdź czy subskrypcaj i order mają tego samego clienta
-        OrderFactory(subscription=self.subscription)
-        print(self.order.email, '<-------------')
-        existing_order = check_if_subscription_is_ordered(self.user)
-        self.assertEqual(existing_order, True)
+        sub = SubscriptionFactory(client=self.user)
+        order = OrderFactory(subscription=sub)
+        client_id = check_if_sub_and_order_has_the_same_client(order, sub)
+        self.assertEqual(client_id, True)
 
-    def test_calculate_orde_expnesive(self):
+    def test_calculate_order_expensive(self):
         """Sprawdź czy jak kupisz drogą subskrycpjcę to czy jest droga"""
         pass
 
