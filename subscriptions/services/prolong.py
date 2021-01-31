@@ -1,11 +1,9 @@
-from dateutil.relativedelta import relativedelta
 from django.core.mail import send_mail
 from django.utils import timezone
 
-from subscriptions.constants import SpecialOffers, BillingType
+from subscriptions.constants import SpecialOffers
 from subscriptions.errors import ProlongingError
 from subscriptions.models import Subscription
-from subscriptions.serializers import SubscriptionSerializer
 
 
 class ProlongSubscription:
@@ -63,4 +61,3 @@ class ProlongSubscription:
                               "admin@pycharmshop.com",
                               {prolonged_subscription.client.email})
         return mail_sent
-
