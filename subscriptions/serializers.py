@@ -16,5 +16,3 @@ class SubscriptionSerializer(serializers.ModelSerializer):
             'valid_till',
             'valid_from',
         ]
-
-

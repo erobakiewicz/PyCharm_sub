@@ -47,7 +47,6 @@ class ProlongSubscription:
             client=self.subscription.client,
             date_created=self.subscription.date_created,))
 
-
     def send_notification_mail(self):
         prolonged_subscription = self.new_sub
         subject = f'Your Pycharm subscription {prolonged_subscription.id} is prolonged.'

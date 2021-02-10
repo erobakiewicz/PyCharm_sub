@@ -26,8 +26,8 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
         return super().get_queryset().filter(client=self.request.user)
 
     def create(self, request, *args, **kwargs):
-        if request.user.subscription_set.all().exists():
-            operator = ProlongSubscription(subscription=request.user.subscription_set.last())
+        if request.user.subscriptions.all().exists():
+            operator = ProlongSubscription(subscription=request.user.subscriptions.last())
             try:
                 operator.prolong()
                 obj = self.serializer_class(operator.new_sub).data

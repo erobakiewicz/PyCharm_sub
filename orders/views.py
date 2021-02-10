@@ -12,5 +12,3 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return super().get_queryset().filter(subscription__client=self.request.user)
-
-
