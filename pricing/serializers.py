@@ -15,4 +15,6 @@ class PricingSerializer(serializers.ModelSerializer):
             'get_tax_for_yearly',
             'get_total_price_monthly',
             'get_total_price_yearly',
+            'second_year_yearly_price',
+            'third_year_onwards_yearly_price',
         ]

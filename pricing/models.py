@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.db import models
 
 from subscriptions.constants import UserTypes, BillingType, SpecialOffers
@@ -8,12 +10,10 @@ class Pricing(models.Model):
     offer_type = models.CharField(
         max_length=20,
         choices=SpecialOffers.Choices,
-        default=SpecialOffers.NO_SPECIAL_OFFERS
     )
     user_type = models.CharField(
         max_length=15,
         choices=UserTypes.Choices,
-        default=UserTypes.INDIVIDUAL
     )
     price_monthly = models.DecimalField(max_digits=10, decimal_places=2)
     country = models.CharField(
@@ -30,6 +30,10 @@ class Pricing(models.Model):
             )
         ]
 
+    @property
+    def price_yearly(self):
+        return self.price_monthly * 10
+
     def get_tax_for_monthly(self):
         return self.price_monthly * Countries.TAXES.get(self.country)
 
@@ -37,13 +41,16 @@ class Pricing(models.Model):
         return self.price_yearly * Countries.TAXES.get(self.country)
 
     @property
-    def price_yearly(self):
-        return self.price_monthly * 10
-
-    @property
     def get_total_price_monthly(self):
-        return self.price_monthly - self.get_tax_for_monthly()
+        return self.price_monthly + self.get_tax_for_monthly()
 
     @property
     def get_total_price_yearly(self):
-        return self.price_yearly - self.get_tax_for_yearly()
+        return self.price_yearly + self.get_tax_for_yearly()
+
+    def second_year_yearly_price(self):
+        return self.price_yearly - (self.price_yearly * (20 / Decimal(100)))
+
+    def third_year_onwards_yearly_price(self):
+        second_year = self.second_year_yearly_price()
+        return second_year - (second_year * 25/Decimal(100))
