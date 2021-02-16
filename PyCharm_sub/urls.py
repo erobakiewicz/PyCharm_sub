@@ -21,6 +21,7 @@ from rest_framework import permissions
 from rest_framework.routers import DefaultRouter
 
 from orders.views import OrderViewSet
+from pricing.views import PricingViewSet
 from subscriptions.views import SubscriptionViewSet
 
 schema_view = get_schema_view(openapi.Info(title="PyCharm subscriptions API",
@@ -38,6 +39,7 @@ router = DefaultRouter()
 
 router.register('orders', OrderViewSet, basename='order')
 router.register('subscription', SubscriptionViewSet, basename='subscription')
+router.register('pricing', PricingViewSet, basename='pricing')
 
 urlpatterns = [
     path('admin/', admin.site.urls),

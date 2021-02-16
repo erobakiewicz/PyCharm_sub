@@ -49,6 +49,7 @@ INSTALLED_APPS = [
 
     'subscriptions',
     'orders',
+    'pricing',
 
     'rest_framework',
     'rest_framework.authtoken',
