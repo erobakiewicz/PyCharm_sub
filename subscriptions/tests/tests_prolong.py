@@ -74,7 +74,8 @@ class SubscriptionProlongingTestCase(APITestCase):
         sub = SubscriptionFactory(
             client=self.user,
             billing_type='yearly',
-            special_offers=SpecialOffers.NO_SPECIAL_OFFERS
+            special_offers=SpecialOffers.NO_SPECIAL_OFFERS,
+            valid_from=timezone.now() + relativedelta(years=1, days=3)
         )
         response = self.client.post(
             '/subscription/',

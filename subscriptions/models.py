@@ -2,6 +2,7 @@ from dateutil.relativedelta import relativedelta
 
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils import timezone
 
 from subscriptions.constants import UserTypes, BillingType, SpecialOffers
 
@@ -21,7 +22,7 @@ class Subscription(models.Model):
         default=SpecialOffers.NO_SPECIAL_OFFERS,
     )
     date_created = models.DateTimeField(auto_now_add=True)
-    valid_from = models.DateTimeField()
+    valid_from = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f'{self.client} - {self.billing_type}'

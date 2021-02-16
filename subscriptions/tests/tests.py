@@ -25,7 +25,7 @@ class SubscriptionModelTestCase(TestCase):
 
     def test_user_has_no_subscription(self):
         has_sub = check_if_user_has_valid_subscription(self.user)
-        print(self.user.subscription_set.exists())
+        print(self.user.subscriptions.exists())
         self.assertEqual(has_sub, False)
 
     def test_active_subscription(self):
@@ -109,13 +109,9 @@ class QueryAllTestCase(TestCase):
         self.subscription = SubscriptionFactory(is_active=False, client=self.user1)
 
     def test_show_all_users_with_valid_subscription(self):
-        print(User.objects.all().values('subscription__id'))
-        print(User.objects.all().values('username'))
         all_users_with_valid_subscription = check_all_users_with_valid_sub()
-        print(all_users_with_valid_subscription)
         self.assertGreater(all_users_with_valid_subscription, 0)
 
     def test_show_all_subscriptions_of_a_user(self):
         all_user_sub = check_all_user_subscriptions(self.user)
-        print(all_user_sub)
         self.assertTrue(all_user_sub, Subscription.objects.filter(client=self.user))
