@@ -7,6 +7,9 @@ from .constants import Countries
 
 
 class Pricing(models.Model):
+    SECOND_YEAR_DISCOUNT = Decimal('0.2')
+    THIRD_YEAR_DISCOUNT = Decimal('0.25')
+
     offer_type = models.CharField(
         max_length=20,
         choices=SpecialOffers.Choices,
@@ -49,8 +52,8 @@ class Pricing(models.Model):
         return self.price_yearly + self.get_tax_for_yearly()
 
     def second_year_yearly_price(self):
-        return self.price_yearly - (self.price_yearly * (20 / Decimal(100)))
+        return self.price_yearly - (self.price_yearly * self.SECOND_YEAR_DISCOUNT)
 
     def third_year_onwards_yearly_price(self):
         second_year = self.second_year_yearly_price()
-        return second_year - (second_year * 25/Decimal(100))
+        return second_year - (second_year * self.THIRD_YEAR_DISCOUNT)
