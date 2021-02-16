@@ -14,7 +14,8 @@ class YearlyPriceTest(TestCase):
     def test_second_year_price(self):
         '''
         Testing second_year_yearly_price method from Pricing model
-        Checking if second year discount is equal to 20% discount from the original price
+        Checking if second year discount is equal to SECOND_YEAR_DISCOUNT amount in Pricing model
+        discount from the original price
         Checking if price from the first year minus discount is equal to secon year price
         '''
         first_year_price = self.pricing.price_yearly
@@ -29,6 +30,7 @@ class YearlyPriceTest(TestCase):
     def test_third_year_price(self):
         '''
         Testing third_year_onwards_yearly_price method from Pricing model
+        Checking if third year discount is equal to THIRD_YEAR_DISCOUNT amount in Pricing model
         Checking if third year price is equal to second year price minus discount
         '''
         first_year_price = self.pricing.price_yearly
