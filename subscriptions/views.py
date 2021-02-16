@@ -26,14 +26,16 @@ class SubscriptionViewSet(viewsets.ModelViewSet):
         return super().get_queryset().filter(client=self.request.user)
 
     def create(self, request, *args, **kwargs):
-        if request.user.subscription_set.all().exists():
-            operator = ProlongSubscription(subscription=request.user.subscription_set.last())
+        if request.user.subscriptions.all().exists():
+            operator = ProlongSubscription(subscription=request.user.subscriptions.last())
             try:
                 operator.prolong()
                 obj = self.serializer_class(operator.new_sub).data
+                print(obj)
+                return Response(obj, status=status.HTTP_201_CREATED)
             except ProlongingError:
                 return Response(status=status.HTTP_401_UNAUTHORIZED, data=operator.errors)
         else:
-            obj = super().create(request, *args, **kwargs)
-        return Response(obj, status=status.HTTP_201_CREATED)
+            return super().create(request, *args, **kwargs)
+
 

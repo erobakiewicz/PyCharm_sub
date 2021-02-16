@@ -4,6 +4,7 @@ from django.utils import timezone
 from subscriptions.constants import SpecialOffers
 from subscriptions.errors import ProlongingError
 from subscriptions.models import Subscription
+from subscriptions.serializers import SubscriptionSerializer
 
 
 class ProlongSubscription:
@@ -22,7 +23,7 @@ class ProlongSubscription:
         self.create_new_prolonged_sub()
         # 3. send some notifications or smth
         self.send_notification_mail()
-        return
+        return self.new_sub
 
     def prolong_validation(self):
         if self.old_subscription.special_offers == SpecialOffers.STUDENT:
@@ -41,17 +42,21 @@ class ProlongSubscription:
             return timezone.now()
 
     def create_new_prolonged_sub(self):
-        self.new_sub = Subscription.objects.create(
+        new_sub = Subscription.objects.create(
             client=self.old_subscription.client,
-        obj = Subscription.objects.create(
-            client=self.subscription.client,
-            date_created=self.subscription.date_created,))
-
+            is_active=True,
+            user_type=self.old_subscription.user_type,
+            billing_type=self.old_subscription.billing_type,
+            special_offers=self.old_subscription.special_offers,
+            date_created=timezone.now(),
+            valid_from=self.get_valid_from(),
+        )
+        self.new_sub = new_sub
 
     def send_notification_mail(self):
         prolonged_subscription = self.new_sub
         subject = f'Your Pycharm subscription {prolonged_subscription.id} is prolonged.'
-        message = f'Dear {prolonged_subscription.client.first_name} {prolonged_subscription.client.last_name},' \
+        message = f'Dear {prolonged_subscription.client.first_name} {prolonged_subscription.client.last_name}, \n' \
                   f'Your {prolonged_subscription.billing_type} subscription has been prolonged untill' \
                   f' {prolonged_subscription.valid_till.strftime("%Y-%m-%d")}.'
         mail_sent = send_mail(subject,
